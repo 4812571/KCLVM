@@ -15,7 +15,7 @@ ADD . /kclvm
 WORKDIR /kclvm
 
 # Compile the fuzzers.
-RUN ${HOME}/.cargo/bin/cargo fuzz build --fuzz-dir /kclvm/tests/fuzz
+RUN ${HOME}/.cargo/bin/cargo fuzz build --fuzz-dir /kclvm/kclvm/tests/fuzz
 
 # Copy the fuzzers to the final image.
 FROM ubuntu:20.04
