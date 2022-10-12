@@ -1,0 +1,5 @@
+duration: 120
+project: formats
+target: certreqinfo
+cmds:
+  - cmd: /kclvm/tests/fuzz/target/x86_64-unknown-linux-gnu/release/fuzz_parser
