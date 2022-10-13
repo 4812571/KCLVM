@@ -10,7 +10,7 @@ RUN cargo install cargo-fuzz
 ## Add source code to the build stage.
 ADD . /kclvm
 
-WORKDIR /kclvm/kclvm/fuzz/
+WORKDIR /kclvm/kclvm/tests/fuzz
 RUN cargo +nightly fuzz build
 
 FROM --platform=linux/amd64 rustlang/rust:nightly
