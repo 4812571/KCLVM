@@ -1,22 +1,17 @@
 # Build Stage
-FROM ubuntu:20.04 as builder
+FROM --platform=linux/amd64 rustlang/rust:nightly as builder
+ENV DEBIAN_FRONTEND=noninteractive
 
-# Install build dependencies.
-RUN apt-get update && \
-    DEBIAN_FRONTEND=noninteractive apt-get install -y cmake clang curl
+## Install build dependencies.
+RUN apt-get update 
+RUN apt-get install -y cmake clang
+RUN cargo install cargo-fuzz
 
-# Install Rust.
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-RUN ${HOME}/.cargo/bin/rustup default nightly
-RUN ${HOME}/.cargo/bin/cargo install -f cargo-fuzz
-
-## Add the source code.
+## Add source code to the build stage.
 ADD . /kclvm
-WORKDIR /kclvm
 
-# Compile the fuzzers.
-RUN ${HOME}/.cargo/bin/cargo fuzz build --fuzz-dir /kclvm/kclvm/tests/fuzz
+WORKDIR /kclvm/kclvm/fuzz/
+RUN cargo +nightly fuzz build
 
-# Copy the fuzzers to the final image.
-FROM ubuntu:20.04
-COPY --from=builder /kclvm /kclvm
+FROM --platform=linux/amd64 rustlang/rust:nightly
+COPY --from=builder /kclvm/kclvm/fuzz/target/x86_64-unknown-linux-gnu/debug/fuzz_parser /fuzz_parser
